@@ -11,6 +11,7 @@
   Files Transferred
   <% ss.transfer_results.each do |t| %>
       <%= t.file %>
+
   <% end %>
 <% end %>
 
@@ -18,6 +19,7 @@
   <%= script_result.move_results.count %> file(s) were moved:
   <% script_result.move_results.each do |m| %>
     <%= m.old_location %> to <%= m.new_location %>
+
   <% end %>
 <% end %>
 
@@ -25,6 +27,7 @@
   <%= script_result.prune_results.count %> empty directories were pruned:
   <% script_result.prune_results.each do |p| %>
     <%= p.dir_name %>
+
   <% end %>
 <% end %>
 

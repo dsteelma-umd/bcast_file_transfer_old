@@ -123,7 +123,7 @@ module BcastFileTransfer
         )
       end
 
-      email_text = ERB.new(email).result(binding)
+      email_text = ERB.new(email, 0, '>').result(binding)
       puts "ERB:\n\n #{email_text}"
     end
   end
