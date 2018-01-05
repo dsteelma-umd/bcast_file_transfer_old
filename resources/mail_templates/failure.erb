@@ -1,0 +1,67 @@
+<% (success_servers, failed_servers) = script_result.server_results.partition(&:success?) %>
+
+Failures occurred!
+
+Failures
+--------
+<% failed_servers.each do |fs| %>
+  dest_server: <%= fs.dest_server %>
+  dest_directory: <%= fs.dest_directory %>
+
+  <% unless fs.comparison_result.success? %>
+    There were comparison errors:
+        error: <%= fs.comparison_result.result.error %>
+        exitcode: <%= fs.comparison_result.result.exitcode %>
+  <% end %>
+
+  <% unless fs.transfer_results.map(&:success?).all? %>
+    <% (successful_transfers, failed_transfers) = fs.transfer_results.partition(&:success?) %>
+    <% total_transfer_count = fs.transfer_results.count %>
+
+    <%= failed_transfers.count %> of <%= total_transfer_count %> files failed:
+
+    <% failed_transfers.each do |t| %>
+      error: <%= t.result.error %>
+      exitcode: <%= t.result.exitcode %>
+      file: <%= t.file %>
+    <% end %>
+
+    <% if successful_transfers.any? %>
+      The following <%= successful_transfers.count %> transfers succeeded:
+      <% successful_transfers.each do |t| %>
+        file: <%= t.file %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<% if success_servers.any? %>
+  Successes
+  ---------
+  <% success_servers.each do |ss| %>
+    dest_server: <%= ss.dest_server %>
+    dest_directory: <%= ss.dest_directory %>
+
+    <% successful_transfers = ss.transfer_results.select(&:success?) %>
+    <% total_transfer_count = ss.transfer_results.count %>
+
+    <%= successful_transfers.count %> of <%= total_transfer_count %> files transferred successfully.
+    <% successful_transfers.each do |t| %>
+      file: <%= t.file %>
+    <% end %>
+  <% end %>
+<% end %>
+
+<% if script_result.move_results.any? %>
+  <%= script_result.move_results.count %> file(s) were moved:
+  <% script_result.move_results.each do |m| %>
+    <%= m.old_location %> to <%= m.new_location %>
+  <% end %>
+<% end %>
+
+<% if script_result.prune_results.any? %>
+  <%= script_result.prune_results.count %> empty directories were pruned:
+  <% script_result.prune_results.each do |p| %>
+    <%= p.dir_name %>
+  <% end %>
+<% end %>
