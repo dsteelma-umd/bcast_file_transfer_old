@@ -26,7 +26,7 @@ module BcastFileTransfer
       end
 
       def configure_logger_for(classname)
-        if @@logfile.nil? || ("stdout" == @@logfile.strip.downcase)
+        if @@logfile.nil? || ('stdout' == @@logfile.strip.downcase)
           logger = Logger.new(STDOUT)
         else
           logger = Logger.new(@@logfile)
@@ -137,9 +137,9 @@ module BcastFileTransfer
       dest_directory = destination_server['directory']
       dest_username = destination_server['username']
 
-      puts "server: #{dest_server}"
-      puts "directory: #{dest_directory}"
-      puts "src_dir: #{src_dir}"
+      # puts "server: #{dest_server}"
+      # puts "directory: #{dest_directory}"
+      # puts "src_dir: #{src_dir}"
 
       rsync_options = ['--archive', '--dry-run', '--itemize-changes']
 
@@ -177,9 +177,9 @@ module BcastFileTransfer
 
       rsync_options = ['--archive', '--itemize-changes', '--relative']
 
-    #  if rand < 0.1
-    #    dest_directory = '/foo/bar'
-    #  end
+      #  if rand < 0.1
+      #    dest_directory = '/foo/bar'
+      #  end
       logger.debug "rsync #{rsync_options.join(' ')} #{src_file_path} #{dest_username}@#{dest_server}:#{dest_directory}"
 
       result = Rsync.run(src_file_path, "#{dest_username}@#{dest_server}:#{dest_directory}", rsync_options)
@@ -191,7 +191,7 @@ module BcastFileTransfer
 
     def prune_empty_subdirectories(dir)
       prune_results = []
-      Dir[dir+'**/'].reverse_each do |d|
+      Dir[dir + '**/'].reverse_each do |d|
         if Dir.entries(d).sort == %w(. ..)
           logger.debug "Pruning empty subdirectory: #{d}"
           Dir.rmdir d
@@ -215,7 +215,7 @@ module BcastFileTransfer
 
     def initialize_logger(config_hash)
       logfile = config_hash['logger.logfile']
-      if logfile.nil? || ("stdout" == logfile.strip.downcase)
+      if logfile.nil? || ('stdout' == logfile.strip.downcase)
         logger = Logger.new(STDOUT)
       else
         logger = Logger.new(logfile)
@@ -233,7 +233,7 @@ module BcastFileTransfer
 
     #  (successful_transfers, failed_transfers) = transfer_results.partition(&:success?)
 
-      email = ""
+      email = ''
 
       if script_result.success?
         email = <<-SUCCESS
