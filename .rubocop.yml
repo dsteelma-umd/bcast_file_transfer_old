@@ -1,0 +1,11 @@
+# Exclude auto-generated files
+AllCops:
+  TargetRubyVersion: 2.2
+
+# Increase max allowed line length
+Metrics/LineLength:
+  Max: 120
+
+Metrics/ClassLength:
+  Exclude:
+    - 'test/**/*'

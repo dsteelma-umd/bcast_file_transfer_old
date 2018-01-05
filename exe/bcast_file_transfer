@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require "bcast_file_transfer"
+require 'bcast_file_transfer'
 
 # Load configuration from file
 config_hash = YAML.load_file('config.yml')
@@ -22,7 +22,10 @@ destination_servers.each do |dest|
 
   unless comparison_result.success?
     # Could not get list of files to transfer, so skip to next server
-    server_results << BcastFileTransfer::ServerResult.new(comparison_result.dest_server, comparison_result.dest_directory, dest['disable_move_on_failure'], comparison_result, transfer_results)
+    server_results << BcastFileTransfer::ServerResult.new(
+      comparison_result.dest_server, comparison_result.dest_directory,
+      dest['disable_move_on_failure'], comparison_result, transfer_results
+    )
     next
   end
 
@@ -35,9 +38,11 @@ destination_servers.each do |dest|
     transfer_results << result
   end
 
-  server_results << BcastFileTransfer::ServerResult.new(comparison_result.dest_server, comparison_result.dest_directory, dest['disable_move_on_failure'], comparison_result, transfer_results)
+  server_results << BcastFileTransfer::ServerResult.new(
+    comparison_result.dest_server, comparison_result.dest_directory,
+    dest['disable_move_on_failure'], comparison_result, transfer_results
+  )
 end
-
 
 # Move successfully transferred files
 all_transfers = server_results.flat_map(&:transfer_results)
@@ -69,6 +74,3 @@ end
 # Send email describing results
 script_result = BcastFileTransfer::ScriptResult.new(config_hash, server_results, move_results, prune_results)
 bcast_file_transfer.send_email(script_result)
-
-
-

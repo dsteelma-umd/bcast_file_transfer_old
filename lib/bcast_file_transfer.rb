@@ -1,7 +1,6 @@
-require "bcast_file_transfer/version"
-require "rsync"
-require "json"
-#require "set"
+require 'bcast_file_transfer/version'
+require 'rsync'
+require 'json'
 require 'fileutils'
 require 'logger'
 require 'erb'
@@ -34,7 +33,7 @@ module BcastFileTransfer
     end
 
     def success?
-    @comparison_result.success? && @transfer_results.map(&:success?).all?
+      @comparison_result.success? && @transfer_results.map(&:success?).all?
     end
   end
 
@@ -180,7 +179,7 @@ module BcastFileTransfer
 
     def initialize_logger(config_hash)
       logfile = config_hash['logger.logfile']
-      if logfile.nil? || ("stdout" == (logfile.strip.downcase))
+      if logfile.nil? || ("stdout" == logfile.strip.downcase)
         logger = Logger.new(STDOUT)
       else
         logger = Logger.new(logfile)
