@@ -5,10 +5,12 @@ require 'bcast_file_transfer'
 # Load configuration from file
 config_hash = YAML.load_file('config.yml')
 
-bcast_file_transfer = BcastFileTransfer::BcastFileTransfer.new
 
+BcastFileTransfer::Logging.initialize(config_hash)
+bcast_file_transfer = BcastFileTransfer::BcastFileTransfer.new
 # Initialization
-$logger = bcast_file_transfer.initialize_logger(config_hash)
+logger = BcastFileTransfer::Logging.logger_for(self.class.name)
+
 src_dir = config_hash['src_dir']
 server_results = []
 destination_servers = config_hash['destination_servers']
@@ -30,7 +32,7 @@ destination_servers.each do |dest|
   end
 
   transfer_files = comparison_result.transfer_files
-  $logger.debug "transfer_files: #{transfer_files}"
+  logger.debug "transfer_files: #{transfer_files}"
 
   # Transfer each file to the destination server
   transfer_files.each do |file|

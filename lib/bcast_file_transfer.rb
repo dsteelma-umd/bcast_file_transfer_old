@@ -7,6 +7,40 @@ require 'erb'
 require 'yaml'
 
 module BcastFileTransfer
+  module Logging
+    def logger
+      @logger ||= Logging.logger_for(self.class.name)
+    end
+
+    # Use a hash class-ivar to cache a unique Logger per class:
+    @loggers = {}
+
+    class << self
+      def initialize(config_hash)
+        @@logfile = config_hash['logger.logfile']
+        @@loglevel = config_hash['logger.level']
+      end
+
+      def logger_for(classname)
+        @loggers[classname] ||= configure_logger_for(classname)
+      end
+
+      def configure_logger_for(classname)
+        if @@logfile.nil? || ("stdout" == @@logfile.strip.downcase)
+          logger = Logger.new(STDOUT)
+        else
+          logger = Logger.new(@@logfile)
+        end
+
+        # Note: In Ruby 2.3 and later can use
+        # logger.level = onfig_hash['logger.level']
+        logger.level = Kernel.const_get @@loglevel
+        logger.progname = classname
+        logger
+      end
+    end
+  end
+
   class ScriptResult
     attr_reader :config_hash, :server_results, :move_results, :prune_results
     def initialize(config_hash, server_results, move_results, prune_results)
@@ -95,6 +129,8 @@ module BcastFileTransfer
   end
 
   class BcastFileTransfer
+    include Logging
+
     # Determine files that need to be transferred
     def files_to_transfer(destination_server, src_dir)
       dest_server = destination_server['server']
@@ -107,7 +143,7 @@ module BcastFileTransfer
 
       rsync_options = ['--archive', '--dry-run', '--itemize-changes']
 
-      $logger.debug "rsync #{rsync_options.join(' ')} #{src_dir} #{dest_username}@#{dest_server}:#{dest_directory}"
+      logger.debug "rsync #{rsync_options.join(' ')} #{src_dir} #{dest_username}@#{dest_server}:#{dest_directory}"
 
       transfer_files = []
       result = Rsync.run(src_dir, "#{dest_username}@#{dest_server}:#{dest_directory}", rsync_options)
@@ -118,7 +154,7 @@ module BcastFileTransfer
           end
         end
       else
-        $logger.error(
+        logger.error(
           "Comparison failure: exitcode: #{result.exitcode}, " \
           "error: #{result.error}, " \
           "dest_server: #{dest_server}, " \
@@ -144,11 +180,11 @@ module BcastFileTransfer
     #  if rand < 0.1
     #    dest_directory = '/foo/bar'
     #  end
-      $logger.debug "rsync #{rsync_options.join(' ')} #{src_file_path} #{dest_username}@#{dest_server}:#{dest_directory}"
+      logger.debug "rsync #{rsync_options.join(' ')} #{src_file_path} #{dest_username}@#{dest_server}:#{dest_directory}"
 
       result = Rsync.run(src_file_path, "#{dest_username}@#{dest_server}:#{dest_directory}", rsync_options)
       unless result.success?
-        $logger.error "Error transferring #{filename} to #{dest_server}:#{dest_directory}"
+        logger.error "Error transferring #{filename} to #{dest_server}:#{dest_directory}"
       end
       TransferResult.new(dest_server, dest_directory, src_dir, filename, result)
     end
@@ -157,7 +193,7 @@ module BcastFileTransfer
       prune_results = []
       Dir[dir+'**/'].reverse_each do |d|
         if Dir.entries(d).sort == %w(. ..)
-          $logger.debug "Pruning empty subdirectory: #{d}"
+          logger.debug "Pruning empty subdirectory: #{d}"
           Dir.rmdir d
           prune_results << PruneResult.new(d)
         end
@@ -170,7 +206,7 @@ module BcastFileTransfer
       files_to_move.each do |f|
         dest_dir = succesful_transfer_dir+File.dirname(f)
         FileUtils.mkdir_p(dest_dir)
-        $logger.info "Moving #{f} to #{dest_dir}/#{File.basename(f)}"
+        logger.info "Moving #{f} to #{dest_dir}/#{File.basename(f)}"
         FileUtils.mv "#{src_dir}#{f}", dest_dir
         move_results << MoveResult.new("#{src_dir}#{f}", "#{dest_dir}/#{File.basename(f)}")
       end
