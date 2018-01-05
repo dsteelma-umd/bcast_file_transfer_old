@@ -2,12 +2,14 @@ PATH
   remote: .
   specs:
     bcast_file_transfer (0.1.0)
+      rsync
 
 GEM
   remote: https://rubygems.org/
   specs:
     minitest (5.4.3)
     rake (10.4.2)
+    rsync (1.0.9)
 
 PLATFORMS
   ruby

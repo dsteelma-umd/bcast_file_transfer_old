@@ -2,4 +2,73 @@
 
 require "bcast_file_transfer"
 
-puts "Hello, world!"
+# Load configuration from file
+config_hash = YAML.load_file('config.yml')
+
+bcast_file_transfer = BcastFileTransfer::BcastFileTransfer.new
+
+# Initialization
+$logger = bcast_file_transfer.initialize_logger(config_hash)
+src_dir = config_hash['src_dir']
+server_results = []
+destination_servers = config_hash['destination_servers']
+
+# For each destination server...
+destination_servers.each do |dest|
+  transfer_results = []
+
+  # Determine which files need to be transferred
+  comparison_result = bcast_file_transfer.files_to_transfer(dest, src_dir)
+
+  unless comparison_result.success?
+    # Could not get list of files to transfer, so skip to next server
+    server_results << BcastFileTransfer::ServerResult.new(comparison_result.dest_server, comparison_result.dest_directory, dest['disable_move_on_failure'], comparison_result, transfer_results)
+    next
+  end
+
+  transfer_files = comparison_result.transfer_files
+  $logger.debug "transfer_files: #{transfer_files}"
+
+  # Transfer each file to the destination server
+  transfer_files.each do |file|
+    result = bcast_file_transfer.transfer_file(dest, src_dir, file)
+    transfer_results << result
+  end
+
+  server_results << BcastFileTransfer::ServerResult.new(comparison_result.dest_server, comparison_result.dest_directory, dest['disable_move_on_failure'], comparison_result, transfer_results)
+end
+
+
+# Move successfully transferred files
+all_transfers = server_results.flat_map(&:transfer_results)
+(successful_transfers, failed_transfers) = all_transfers.partition(&:success?)
+success_files = successful_transfers.map(&:file).uniq
+failed_files = failed_transfers.map(&:file).uniq
+
+move_files_after_successful_transfer = config_hash['move_files_after_successful_transfer']
+
+# Determine whether to actually do the move, based on the
+# 'move_files_after_successful_transfer' config, and whether any
+# servers marked with "disable_move_on_failure" has failures
+failed_servers = server_results.reject(&:success?)
+critical_servers_failed = failed_servers.map(&:disable_move_on_failure).any?
+
+prune_results = []
+move_results = []
+
+if move_files_after_successful_transfer && !critical_servers_failed
+  processed_files = success_files - failed_files
+  succesful_transfer_dir = config_hash['succesful_transfer_dir']
+  move_results = bcast_file_transfer.move_files_after_transfer(processed_files, src_dir, succesful_transfer_dir)
+
+  # Prune any empty directories
+  prune_subdirectories = config_hash['prune_empty_subdirectories']
+  prune_results = bcast_file_transfer.prune_empty_subdirectories(src_dir) if prune_subdirectories
+end
+
+# Send email describing results
+script_result = BcastFileTransfer::ScriptResult.new(config_hash, server_results, move_results, prune_results)
+bcast_file_transfer.send_email(script_result)
+
+
+
