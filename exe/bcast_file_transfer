@@ -2,8 +2,18 @@
 
 require 'bcast_file_transfer'
 
-# Load configuration from file
-config_hash = YAML.load_file('config.yml')
+options = BcastFileTransfer::OptParse.parse(ARGV)
+
+puts "options['config_file'] = #{options['config_file']}"
+
+config_file = options['config_file']
+
+if config_file
+  config_hash = YAML.load_file(config_file)
+else
+  # Load configuration from file
+  config_hash = YAML.load_file('config.yml')
+end
 
 
 BcastFileTransfer::Logging.initialize(config_hash)

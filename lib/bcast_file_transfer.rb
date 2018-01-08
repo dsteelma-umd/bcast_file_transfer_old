@@ -10,4 +10,5 @@ module BcastFileTransfer
   require 'bcast_file_transfer/prune_result'
   require 'bcast_file_transfer/bcast_file_transfer'
   require 'bcast_file_transfer/email'
+  require 'bcast_file_transfer/opt_parse'
 end
