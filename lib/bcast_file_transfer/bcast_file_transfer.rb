@@ -100,13 +100,13 @@ module BcastFileTransfer
       end
 
       # Note: In Ruby 2.3 and later can use
-      # logger.level = onfig_hash['logger.level']
+      # logger.level = config_hash['logger.level']
       logger.level = Kernel.const_get config_hash['logger.level']
       logger
     end
 
     def send_mail(config_hash, script_result)
-      Mail.send_mail(config_hash, script_result)
+      Email.send_mail(config_hash, script_result)
     end
   end
 end

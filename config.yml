@@ -29,3 +29,26 @@ destination_servers:
     username: vagrant
     directory: "/tmp/"
     disable_move_on_failure: true
+
+smtp_server:
+    # The IP address/hostname of the SMTP server
+    address: localhost
+    # The port to contact the SMTP server
+    port: 25
+    # The domain to use with the SMTP server
+    domain:
+    # The authentication scheme to use, typicially ":plain", ":login", or
+    # ":cram_md5"
+    authentication:
+    # The username to send for authentication
+    user_name:
+    # The password to send for authentication
+    password:
+    # If true, mail will be "sent" to a logfile, instead of actually being sent
+    debug: true
+
+mail:
+  # The "from" address to use in emails
+  from: test@example.com
+  # The "to" address to send emails to
+  to: test@example.com

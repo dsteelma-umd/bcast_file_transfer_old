@@ -9,5 +9,5 @@ module BcastFileTransfer
   require 'bcast_file_transfer/move_result'
   require 'bcast_file_transfer/prune_result'
   require 'bcast_file_transfer/bcast_file_transfer'
-  require 'bcast_file_transfer/mail'
+  require 'bcast_file_transfer/email'
 end
