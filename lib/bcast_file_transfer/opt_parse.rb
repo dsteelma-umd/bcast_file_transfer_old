@@ -40,17 +40,29 @@ module BcastFileTransfer
         opts.separator "Common options:"
 
         # No argument, shows at tail.  This will print an options summary.
-        # Try it and see!
         opts.on_tail("-h", "--help", "Show this message") do
           puts opts
           exit
         end
 
-        # # Another typical switch to print the version.
-        # opts.on_tail("--version", "Show version") do
-        #   puts ::Version.join('.')
-        #   exit
-        # end
+        opts.on("--generate-config", "Generates a sample configuration file") do
+          if (File.exists?('config.yml'))
+            STDERR.puts("ERROR: 'config.yml' file already exists.")
+          else
+            sample_config_file = File.read(
+              File.join(File.dirname(File.expand_path(__FILE__)),
+              '../../resources/config/config.yml.sample'))
+            File.open('config.yml', 'w') { |file| file.write(sample_config_file) }
+            puts ("Created 'config.yml' file. Please update with appropriate values")
+          end
+          exit
+        end
+
+        # Another typical switch to print the version.
+        opts.on_tail("--version", "Show version") do
+          puts VERSION
+          exit
+        end
       end
 
       opt_parser.parse!(args)
