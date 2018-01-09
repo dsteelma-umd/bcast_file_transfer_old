@@ -8,7 +8,8 @@ puts "options['config_file'] = #{options['config_file']}"
 
 config_file = options['config_file']
 
-unless File.exists?(config_file) || File.exists?('config.yml')
+unless File.exists?('config.yml') ||
+       (!config_file.nil? && File.exists?(config_file))
   STDERR.push "ERROR: Please provide a configuration file"
   exit
 end
