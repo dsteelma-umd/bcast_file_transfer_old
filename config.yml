@@ -1,52 +1,72 @@
 ---
 # The directory (on the source server) to scan for files to transfer
-src_dir: "/home/vagrant/receiving/"
+src_dir:
 
 # Set to true to move files (on the source server) to a different
 # directory after a successful transfer, false otherwise
 move_files_after_successful_transfer: true
 
 # The directory (on the source server) to move files to after successful
-# transfer
-succesful_transfer_dir: "/tmp/"
+# transfer, if "move_files_after_successful_transfer" is set to true
+succesful_transfer_dir:
 
 # Prunes empty subdirectories (on the source server) in src_dir
-prune_empty_subdirectories: true
+prune_empty_subdirectories: false
 
 # The log file to use. Use "STDOUT" for standard out
 logger.logfile: "STDOUT"
 
 # The log level to use, i.e.,
 # Logger::DEBUG, Logger::INFO, WARN, Logger::ERROR, Logger::FATAL, Logger::UNKNOWN
-logger.level: "Logger::DEBUG"
+logger.level: "Logger::INFO"
 
-# Array of destination servers the files should be transferred to
+# Array of destination servers the files should be transferred to.
 destination_servers:
-#  - server: "192.168.41.105"
-#    directory: "/tmp/"
+  #
+  # Multiple entries are allowed, and consist of the following:
+  #
+  # server: The IP address or hostname of the destination server
+  # username: (Optional) The username to use in contacting the server. If not
+  #           provided, the username of user running the command will be used.
+  # directory: The directory on the destination server to compare with and
+  #            send the files to.
+  # disable_move_on_failure: (Optional) True/false boolean. If set to true, the
+  #                          source files will not be moved if there was an
+  #                          error when communicating with the server.
+  #                          This is typically set to true for "production"
+  #                          servers, and omitted or false for dev/stage
+  #                          servers.
+  #
+  # Sample entry:
+  #  - server: "192.168.41.105"
+  #    username: vagrant
+  #    directory: "/tmp/"
+  #    disable_move_on_failure: true
+  - server:
+    username:
+    directory:
+    disable_move_on_failure: false
 
-  - server: "192.168.41.100"
-    username: vagrant
-    directory: "/tmp/"
-    disable_move_on_failure: true
-
+# Settings specifying the SMTP server for sending email
 smtp_server:
     # The IP address/hostname of the SMTP server
     address: localhost
     # The port to contact the SMTP server
     port: 25
-    # The domain to use with the SMTP server
+    # (Optional) The domain to use with the SMTP server
     domain:
-    # The authentication scheme to use, typicially ":plain", ":login", or
+    # (Optional) The authentication scheme to use, typicially ":plain", ":login", or
     # ":cram_md5"
     authentication:
-    # The username to send for authentication
+    # (Optional) The username to send for authentication
     user_name:
-    # The password to send for authentication
+    # (Optional) The password to send for authentication
     password:
-    # If true, mail will be "sent" to a logfile, instead of actually being sent
+    # (Optional) If true, mail will be "sent" to a logfile, instead of actually
+    # being sent
     debug: true
 
+# Settings to use in construction mail messages
 mail:
   # The "from" address to use in emails
   from: test@example.com
