@@ -1,35 +1,159 @@
-# BcastFileTransfer
+# bcast_file_transfer
 
-Welcome to your new gem! In this directory, you'll find the files you need to
-be able to package up your Ruby library into a gem. Put your Ruby code in the
-file `lib/bcast_file_transfer`. To experiment with that code, run `bin/console`
-for an interactive prompt.
+## Introduction
 
-TODO: Delete this and the text above, and describe your gem
+The project provides a tool for transferring files found in a particular
+directory to one or more servers. The basic intention is to enable files
+uploaded to a single "source" server, to be transferred to multiple
+"destination" servers for processing.
+
+## Use Case
+
+The general use case is that an outside entity is periodically (such as once per
+day) uploading files to the server. The uploaded files are typically organized
+into subdirectories.
+
+This tool is run periodically to transfer any "new" files to multiple
+destination servers. In this case a "new" file is any file in the designated
+directory on the source server, that is not present in the corresponding
+directory of the destination server. The directory hierarchy of the files
+(starting at the designated directory on the source server) is preserved
+when transferring the files to the destination server.
+
+
+Note that because multiple destination servers are involved, some destination
+servers may already have some of the files. This tool only transfers the
+files that are "missing" on a destination server.
+
+The tool will send an email describing the success/failure of the transfers
+to each destination server.
+
+The tool can "clean up" the source directory by moving successfully transferred
+files from the source directory to some other directory, and then pruning any
+empty subdirectories. This simplifies later invocations.
+
+## Functionality
+
+The tool has the following functionality:
+
+For each "destination" server, the tool:
+
+1) Compares the directory on the "source" server with the corresponding
+directory on destination server. Only files/subdirectories missing on the
+destination server will be transferred.
+
+2) Transfers the files to the destination server.
+
+3) Once all transfers to all destination servers is complete, the tool will
+send an email indicating the success/failure of the transfers to each of the
+destination servers.
+
+4) The tool will optionally, on the source server, move successfully
+transferred files from the original directory to a separate directory, so that
+they will not be re-sent in subsequent invocations of the tool.
+
+5) The tool will optionally "prune" empty subdirectories from the source
+directory on the source server.
+
+## Assumptions
+
+The tool makes the following assumptions:
+
+1) All the files in the source directory on the source server are candidates
+for transfer.
+
+2) The source server can identify the files to transfer by comparing the
+source directory on the source server and the destination directory on
+the destination server. Any files/subdirectories not in the destination
+directory will be transferred.
+
+## Requirements
+
+* Ruby 2.2.4 or later
 
 ## Installation
 
-Add this line to your application's Gemfile:
+This tool is implemented as a Ruby gem, but is not available from the
+rubygems.org archive. To install this gem as a command-line tool on a server,
+do the following:
 
-```ruby
-gem 'bcast_file_transfer'
-```
+1) Configure the "gem" command to use the UMD Nexus, instead of rubygems.org as
+the repository:
 
-And then execute:
+    a) Add the Nexus "umd-ruby-gems-repository-group" as a source:
 
-```
-> bundle
-```
+    ```
+    > gem sources --add https://maven.lib.umd.edu/nexus/content/groups/umd-ruby-gems-repository-group/
+    ```
 
-Or install it yourself as:
+    b) Remove the "RubyGems.org" source:
 
-```
-> gem install bcast_file_transfer
-```
+    ```
+    > gem sources --remove https://rubygems.org/
+    ```
+
+    c) Clear the cache:
+
+    ```
+    > gem sources -c
+    ```
+
+2) Install the "bcast\_file_transfer" gem:
+
+    Note: This will add multiple gems into the current gemset.
+
+    ```
+    > gem install bcast_file_transfer
+    ```
+
+3) Run the "bcast\_file_tranfer" gem with the "--generate-config" option to
+generate a "config.yml" file in the current directory:
+
+    ```
+    > bcast_file_transfer --generate-config
+    ```
+
+4) Edit the "config.yml" file, updating it as appropriate.
 
 ## Usage
 
-TODO: Write usage instructions here
+To see the list of available options, run
+
+```
+> bcast_file_transfer --help
+```
+
+To run using the "config.yml" file in the current directory, simply run
+
+```
+> bcast_file_transfer
+```
+
+To run using a "config.yml" file is a different location, run
+
+```
+> bcast_file_transfer --config-file <PATH_TO_CONFIG_YML>
+```
+
+where <PATH\_TO_CONFIG_YML> is the location of the config.yml file.
+
+To list the current version, run:
+
+```
+> bcast_file_transfer --version
+```
+
+### Configuration
+
+The tool is configured using a "config.yml" file. A sample config.yml file
+can be generated by running:
+
+```
+> bcast_file_transfer --generate-config
+```
+
+See the explanatory comments in the file for information about each entry.
+
 
 ## Development
 
@@ -37,13 +161,52 @@ After checking out the repo, run `bin/setup` to install dependencies. Then, run
 `rake test` to run the tests. You can also run `bin/console` for an interactive
 prompt that will allow you to experiment.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To
-release a new version, update the version number in `version.rb`, and then run
-`bundle exec rake release`, which will create a git tag for the version, push
-git commits and tags, and push the `.gem` file to
-[rubygems.org](https://rubygems.org).
+To publish the new version to the UMD Nexus, do the following:
 
-## Contributing
+1) Install the "nexus" gem:
 
-Bug reports and pull requests are welcome on GitHub at
-https://github.com/[USERNAME]/bcast_file_transfer.
+    ```
+    > gem install nexus
+    ```
+
+Note: This command only needs to be run once.
+
+2) To publish the gem:
+
+    a) Run "rake install" to build the gem:
+
+    ```
+    > rake install
+    ```
+
+    This will create a gem file in "pkg" subdirectory.
+
+    b) Switch to the "pkg" subdirectory:
+
+    ```
+    > cd pkg
+    ```
+
+    c) Use the "gem nexus" command, where <GEM_FILE> is the gem filename:
+
+    ```
+    gem nexus --url https://maven.lib.umd.edu/nexus/content/repositories/gem-releases <GEM_FILENAME>
+    ```
+
+    For example, if the filename of the gem is bcast_file_transfer-0.1.0.gem, the
+command would be:
+
+   ```
+   > gem nexus --url https://maven.lib.umd.edu/nexus/content/repositories/gem-releases bcast_file_transfer-0.1.0.gem
+   ```
+
+    **Note:** The URL is for the "UMD Libraries Gem" Nexus repository, not the "umd-ruby-gems-repository-group" repository group.
+
+    Also, currently the "UMD Libraries Gem" Nexus repository is configured to
+    not allow "redeploys". If the gem has updated, the version number for the
+    gem also needs to be updated.
+
+## License
+
+See the [LICENSE](LICENSE.md) file for license rights and limitations
+(Apache 2.0).
