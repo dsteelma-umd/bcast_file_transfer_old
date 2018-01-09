@@ -8,6 +8,11 @@ puts "options['config_file'] = #{options['config_file']}"
 
 config_file = options['config_file']
 
+unless File.exists?(config_file) || File.exists?('config.yml')
+  STDERR.push "ERROR: Please provide a configuration file"
+  exit
+end
+
 if config_file
   config_hash = YAML.load_file(config_file)
 else
