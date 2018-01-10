@@ -1,9 +1,13 @@
 ---
-# The directory (on the source server) to scan for files to transfer
+# The directory (on the source server) to scan for files to transfer.
+# The directory should include the trailing slash, i.e.,
+#
+# src_dir: "/tmp/"
 src_dir:
 
 # The directory (on the source server) to move files to after successful
-# transfer, if "move_files_after_successful_transfer" is set to true
+# transfer, if "move_files_after_successful_transfer" is set to true.
+# The directory should include the trailing slash.
 succesful_transfer_dir:
 
 # Set to true to move files (on the source server) to a different
@@ -29,7 +33,8 @@ destination_servers:
   # username: (Optional) The username to use in contacting the server. If not
   #           provided, the username of user running the command will be used.
   # directory: The directory on the destination server to compare with and
-  #            send the files to.
+  #            send the files to. The directory should include the trailing
+  #            slash.
   # disable_move_on_failure: (Optional) True/false boolean. If set to true, the
   #                          source files will not be moved if there was an
   #                          error when communicating with the server.
@@ -72,3 +77,5 @@ mail:
   from: test@example.com
   # The "to" address to send emails to
   to: test@example.com
+  # Job name to use in the Subject line of the email
+  job_name: "bcast_file_transfer"
