@@ -6,19 +6,18 @@ options = BcastFileTransfer::OptParse.parse(ARGV)
 
 config_file = options['config_file']
 
-unless File.exists?('config.yml') ||
-       (!config_file.nil? && File.exists?(config_file))
-  STDERR.push "ERROR: Please provide a configuration file"
+unless File.exist?('config.yml') ||
+       (!config_file.nil? && File.exist?(config_file))
+  STDERR.push 'ERROR: Please provide a configuration file'
   exit
 end
 
-if config_file
-  config_hash = YAML.load_file(config_file)
-else
-  # Load configuration from file
-  config_hash = YAML.load_file('config.yml')
-end
-
+config_hash = if config_file
+                YAML.load_file(config_file)
+              else
+                # Load configuration from file
+                YAML.load_file('config.yml')
+              end
 
 BcastFileTransfer::Logging.initialize(config_hash)
 bcast_file_transfer = BcastFileTransfer::BcastFileTransfer.new

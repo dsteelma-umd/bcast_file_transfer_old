@@ -18,11 +18,11 @@ module BcastFileTransfer
       end
 
       def configure_logger_for(classname)
-        if @@logfile.nil? || ('stdout' == @@logfile.strip.downcase)
-          logger = Logger.new(STDOUT)
-        else
-          logger = Logger.new(@@logfile)
-        end
+        logger = if @@logfile.nil? || 'stdout'.casecmp(@@logfile.strip).zero?
+                   Logger.new(STDOUT)
+                 else
+                   Logger.new(@@logfile)
+                 end
 
         # Note: In Ruby 2.3 and later can use
         # logger.level = onfig_hash['logger.level']

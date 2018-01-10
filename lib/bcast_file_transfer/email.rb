@@ -12,10 +12,10 @@ module BcastFileTransfer
       mail_body = generate_email_body(config_hash, script_result)
 
       mail = Mail.new do
-        from    "#{mail_from}"
-        to      "#{mail_to}"
-        subject "#{mail_subject}"
-        body    "#{mail_body}"
+        from    mail_from.to_s
+        to      mail_to.to_s
+        subject mail_subject.to_s
+        body    mail_body.to_s
       end
 
       smtp_debug = smtp_config['debug']
@@ -40,17 +40,13 @@ module BcastFileTransfer
     end
 
     def self.generate_email_body(config_hash, script_result)
-      email = ''
+      email_template_filename = if script_result.success?
+                                  '../../resources/mail_templates/success.erb'
+                                else
+                                  '../../resources/mail_templates/failure.erb'
+                                end
 
-      if script_result.success?
-        email = File.read(
-          File.join(File.dirname(File.expand_path(__FILE__)), '../../resources/mail_templates/success.erb')
-        )
-      else
-        email = File.read(
-          File.join(File.dirname(File.expand_path(__FILE__)), '../../resources/mail_templates/failure.erb')
-        )
-      end
+      email = File.read(File.join(File.dirname(File.expand_path(__FILE__)), email_template_filename))
 
       email_text = ERB.new(email, 0, '>').result(binding)
       email_text

@@ -1,6 +1,8 @@
 # Exclude auto-generated files
 AllCops:
   TargetRubyVersion: 2.2
+  Exclude:
+    - bcast_file_transfer.gemspec
 
 # Increase max allowed line length
 Metrics/LineLength:

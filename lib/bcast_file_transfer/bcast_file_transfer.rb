@@ -36,7 +36,8 @@ module BcastFileTransfer
           "Comparison failure: exitcode: #{result.exitcode}, " \
           "error: #{result.error}, " \
           "dest_server: #{dest_server}, " \
-          "dest_directory: #{dest_directory}")
+          "dest_directory: #{dest_directory}"
+        )
       end
 
       ComparisonResult.new(dest_server, dest_directory, src_dir, result, transfer_files)
@@ -61,9 +62,9 @@ module BcastFileTransfer
       logger.debug "rsync #{rsync_options.join(' ')} #{src_file_path} #{dest_username}@#{dest_server}:#{dest_directory}"
 
       result = Rsync.run(src_file_path, "#{dest_username}@#{dest_server}:#{dest_directory}", rsync_options)
-      unless result.success?
-        logger.error "Error transferring #{filename} to #{dest_server}:#{dest_directory}"
-      end
+
+      logger.error "Error transferring #{filename} to #{dest_server}:#{dest_directory}" unless result.success?
+
       TransferResult.new(dest_server, dest_directory, src_dir, filename, result)
     end
 
@@ -71,11 +72,11 @@ module BcastFileTransfer
       prune_results = []
       Dir[dir + '**/'].reverse_each do |d|
         next if d == dir # Skip directory itself
-        if Dir.entries(d).sort == %w(. ..)
-          logger.debug "Pruning empty subdirectory: #{d}"
-          Dir.rmdir d
-          prune_results << PruneResult.new(d)
-        end
+        next unless Dir.entries(d).sort == %w[. ..]
+
+        logger.debug "Pruning empty subdirectory: #{d}"
+        Dir.rmdir d
+        prune_results << PruneResult.new(d)
       end
       prune_results
     end
@@ -83,27 +84,13 @@ module BcastFileTransfer
     def move_files_after_transfer(files_to_move, src_dir, succesful_transfer_dir)
       move_results = []
       files_to_move.each do |f|
-        dest_dir = succesful_transfer_dir+File.dirname(f)
+        dest_dir = succesful_transfer_dir + File.dirname(f)
         FileUtils.mkdir_p(dest_dir)
         logger.info "Moving #{f} to #{dest_dir}/#{File.basename(f)}"
         FileUtils.mv "#{src_dir}#{f}", dest_dir
         move_results << MoveResult.new("#{src_dir}#{f}", "#{dest_dir}/#{File.basename(f)}")
       end
       move_results
-    end
-
-    def initialize_logger(config_hash)
-      logfile = config_hash['logger.logfile']
-      if logfile.nil? || ('stdout' == logfile.strip.downcase)
-        logger = Logger.new(STDOUT)
-      else
-        logger = Logger.new(logfile)
-      end
-
-      # Note: In Ruby 2.3 and later can use
-      # logger.level = config_hash['logger.level']
-      logger.level = Kernel.const_get config_hash['logger.level']
-      logger
     end
 
     def send_mail(config_hash, script_result)
