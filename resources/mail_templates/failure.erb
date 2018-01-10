@@ -13,6 +13,7 @@ Failures
     There were comparison errors:
         error: <%= fs.comparison_result.result.error %>
         exitcode: <%= fs.comparison_result.result.exitcode %>
+
   <% end %>
 
   <% unless fs.transfer_results.map(&:success?).all? %>
@@ -22,15 +23,15 @@ Failures
     <%= failed_transfers.count %> of <%= total_transfer_count %> files failed:
 
     <% failed_transfers.each do |t| %>
-      error: <%= t.result.error %>
-      exitcode: <%= t.result.exitcode %>
-      file: <%= t.file %>
+      file: <%= t.file %>, exitcode: <%= t.result.exitcode %>, error: <%= t.result.error %>
+
     <% end %>
 
     <% if successful_transfers.any? %>
       The following <%= successful_transfers.count %> transfers succeeded:
       <% successful_transfers.each do |t| %>
         file: <%= t.file %>
+
       <% end %>
     <% end %>
   <% end %>
@@ -47,9 +48,14 @@ Failures
     <% successful_transfers = ss.transfer_results.select(&:success?) %>
     <% total_transfer_count = ss.transfer_results.count %>
 
-    <%= successful_transfers.count %> of <%= total_transfer_count %> files transferred successfully.
+  <% if total_transfer_count == 0 %>
+    No files found for transfer.
+  <% else %>
+    <%= successful_transfer_count %> of <%= total_transfer_count %> files transferred successfully.
+
     <% successful_transfers.each do |t| %>
       file: <%= t.file %>
+
     <% end %>
   <% end %>
 <% end %>
