@@ -11,14 +11,10 @@ module BcastFileTransfer
     include Logging
 
     # Determine files that need to be transferred
-    def files_to_transfer(destination_server, src_dir)
+    def files_to_transfer(destination_server, src_dir) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       dest_server = destination_server['server']
       dest_directory = destination_server['directory']
       dest_username = destination_server['username']
-
-      # puts "server: #{dest_server}"
-      # puts "directory: #{dest_directory}"
-      # puts "src_dir: #{src_dir}"
 
       rsync_options = ['--archive', '--dry-run', '--itemize-changes']
 
@@ -27,10 +23,8 @@ module BcastFileTransfer
       transfer_files = []
       result = Rsync.run(src_dir, "#{dest_username}@#{dest_server}:#{dest_directory}", rsync_options)
       if result.success?
-        result.changes.each do |change|
-          if change.file_type == :file && change.update_type == :sent
-            transfer_files << change.filename
-          end
+        result.changes.select { |c| c.file_type == :file && c.update_type == :sent }.each do |change|
+          transfer_files << change.filename
         end
       else
         logger.error(

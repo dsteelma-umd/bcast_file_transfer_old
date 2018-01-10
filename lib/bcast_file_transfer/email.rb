@@ -3,7 +3,8 @@ module BcastFileTransfer
   class Email
     require 'mail'
 
-    def self.send_mail(config_hash, script_result)
+    # Sends an email, based on the result of the script
+    def self.send_mail(config_hash, script_result) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       smtp_config = config_hash['smtp_server']
       mail_config = config_hash['mail']
 
@@ -32,6 +33,7 @@ module BcastFileTransfer
       mail.deliver!
     end
 
+    # Generates the Subject line for the emai;
     def self.generate_subject(config_hash, script_result)
       if script_result.success?
         "#{config_hash['job_name']} File transfer OK"
@@ -40,6 +42,7 @@ module BcastFileTransfer
       end
     end
 
+    # Generates the email body
     def self.generate_email_body(config_hash, script_result)
       email_template_filename = if script_result.success?
                                   '../../resources/mail_templates/success.erb'

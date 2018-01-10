@@ -3,7 +3,7 @@ require 'optparse'
 module BcastFileTransfer
   # Parses options given on the command-line
   class OptParse
-    def self.parse(args)
+    def self.parse(args) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
       # The options specified on the command line will be collected in *options*.
       # We set default values here.
       options = OpenStruct.new
@@ -13,7 +13,7 @@ module BcastFileTransfer
       options.transfer_type = :auto
       options.verbose = false
 
-      opt_parser = OptionParser.new do |opts|
+      opt_parser = OptionParser.new do |opts| # rubocop:disable Metrics/BlockLength
         opts.banner = 'Usage: bcast_file_transfer [options]'
 
         opts.separator ''
