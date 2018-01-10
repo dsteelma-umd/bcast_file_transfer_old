@@ -48,14 +48,15 @@ Failures
     <% successful_transfers = ss.transfer_results.select(&:success?) %>
     <% total_transfer_count = ss.transfer_results.count %>
 
-  <% if total_transfer_count == 0 %>
-    No files found for transfer.
-  <% else %>
-    <%= successful_transfer_count %> of <%= total_transfer_count %> files transferred successfully.
+    <% if total_transfer_count == 0 %>
+      No files found for transfer.
+    <% else %>
+      <%= successful_transfer_count %> of <%= total_transfer_count %> files transferred successfully.
 
-    <% successful_transfers.each do |t| %>
-      file: <%= t.file %>
+      <% successful_transfers.each do |t| %>
+        file: <%= t.file %>
 
+      <% end %>
     <% end %>
   <% end %>
 <% end %>
