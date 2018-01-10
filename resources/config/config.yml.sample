@@ -1,4 +1,7 @@
 ---
+# A name to identify the job.
+job_name: "bcast_file_transfer"
+
 # The directory (on the source server) to scan for files to transfer.
 # The directory should include the trailing slash, i.e.,
 #
@@ -77,5 +80,4 @@ mail:
   from: test@example.com
   # The "to" address to send emails to
   to: test@example.com
-  # Job name to use in the Subject line of the email
-  job_name: "bcast_file_transfer"
+

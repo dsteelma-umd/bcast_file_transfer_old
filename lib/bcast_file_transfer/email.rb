@@ -32,11 +32,10 @@ module BcastFileTransfer
     end
 
     def self.generate_subject(config_hash, script_result)
-      mail_config = config_hash['mail']
       if script_result.success?
-        "#{mail_config['job_name']} File transfer OK"
+        "#{config_hash['job_name']} File transfer OK"
       else
-        "#{mail_config['job_name']} File transfer FAILED"
+        "#{config_hash['job_name']} File transfer FAILED"
       end
     end
 
