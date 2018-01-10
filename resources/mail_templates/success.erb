@@ -2,6 +2,9 @@
 
 File Transfer OK
 
+Job Name: <%= script_result.config_hash['job_name'] %>
+
+
 Summary
 -------
 
@@ -21,11 +24,12 @@ Details
   <% total_transfer_count = ss.transfer_results.count %>
 
   <% if total_transfer_count == 0 %>
-    No files found for transfer.
+    No files needed to be transferred.
   <% else %>
     <%= successful_transfer_count %> of <%= total_transfer_count %> files transferred successfully.
 
     Files Transferred
+    -----------------
     <% ss.transfer_results.each do |t| %>
         <%= t.file %>
 

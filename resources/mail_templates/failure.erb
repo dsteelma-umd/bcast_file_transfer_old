@@ -2,6 +2,9 @@
 
 File Transfer FAILED!
 
+Job Name: <%= script_result.config_hash['job_name'] %>
+
+
 Failures
 --------
 <% failed_servers.each do |fs| %>
@@ -50,7 +53,7 @@ Failures
     <% total_transfer_count = ss.transfer_results.count %>
 
     <% if total_transfer_count == 0 %>
-      No files found for transfer.
+      No files needed to be transferred.
     <% else %>
       <%= successful_transfer_count %> of <%= total_transfer_count %> files transferred successfully.
 
