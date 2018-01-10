@@ -1,5 +1,6 @@
 require 'bcast_file_transfer/version'
 
+# Loads all required classes
 module BcastFileTransfer
   require 'bcast_file_transfer/logging'
   require 'bcast_file_transfer/script_result'

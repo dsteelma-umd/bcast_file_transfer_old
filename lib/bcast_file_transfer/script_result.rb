@@ -1,4 +1,5 @@
 module BcastFileTransfer
+  # Encapsulates results of running script operations
   class ScriptResult
     attr_reader :config_hash, :server_results, :move_results, :prune_results
     def initialize(config_hash, server_results, move_results, prune_results)

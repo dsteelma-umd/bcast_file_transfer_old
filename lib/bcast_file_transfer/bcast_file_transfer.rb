@@ -6,6 +6,7 @@ require 'erb'
 require 'yaml'
 
 module BcastFileTransfer
+  # Library class that holds individual operation steps for use by scripts
   class BcastFileTransfer
     include Logging
 
@@ -68,6 +69,7 @@ module BcastFileTransfer
       TransferResult.new(dest_server, dest_directory, src_dir, filename, result)
     end
 
+    # Removes any empty subdirectories in the given directory.
     def prune_empty_subdirectories(dir)
       prune_results = []
       Dir[dir + '**/'].reverse_each do |d|
@@ -81,6 +83,8 @@ module BcastFileTransfer
       prune_results
     end
 
+    # Moves the list of given files from the given src_dir directory to the
+    # given transfer directory
     def move_files_after_transfer(files_to_move, src_dir, succesful_transfer_dir)
       move_results = []
       files_to_move.each do |f|
@@ -93,6 +97,7 @@ module BcastFileTransfer
       move_results
     end
 
+    # Sends email for the given script_result
     def send_mail(config_hash, script_result)
       Email.send_mail(config_hash, script_result)
     end

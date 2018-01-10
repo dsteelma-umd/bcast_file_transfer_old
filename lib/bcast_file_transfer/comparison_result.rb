@@ -1,4 +1,5 @@
 module BcastFileTransfer
+  # Encapsulates the comparision results for a single destination server
   class ComparisonResult
     attr_reader :dest_server, :dest_directory, :src_dir, :result, :transfer_files
 

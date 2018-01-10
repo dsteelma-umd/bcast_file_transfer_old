@@ -1,4 +1,5 @@
 module BcastFileTransfer
+  # Holds the result of a single "prune" operation
   class PruneResult
     attr_reader :dir_name
 

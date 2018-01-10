@@ -1,6 +1,7 @@
 require 'optparse'
 
 module BcastFileTransfer
+  # Parses options given on the command-line
   class OptParse
     def self.parse(args)
       # The options specified on the command line will be collected in *options*.

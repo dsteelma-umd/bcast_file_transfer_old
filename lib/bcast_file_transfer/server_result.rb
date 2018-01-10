@@ -1,4 +1,5 @@
 module BcastFileTransfer
+  # Encapsulates comparision/transfer results for a single destination server
   class ServerResult
     attr_reader :dest_server, :dest_directory, :disable_move_on_failure, :comparison_result, :transfer_results
     def initialize(dest_server, dest_directory, disable_move_on_failure, comparison_result, transfer_results)

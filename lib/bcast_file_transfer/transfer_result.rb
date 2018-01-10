@@ -1,4 +1,5 @@
 module BcastFileTransfer
+  # Holds the result of a single "transfer" operation
   class TransferResult
     attr_reader :dest_server, :dest_directory, :src_dir, :result, :file
 
