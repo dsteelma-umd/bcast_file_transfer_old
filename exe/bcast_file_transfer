@@ -19,7 +19,8 @@ config_hash = if config_file
                 YAML.load_file('config.yml')
               end
 
-BcastFileTransfer::Logging.initialize(config_hash)
+BcastFileTransfer::Logging.initialize(config_hash['logger.logfile'], config_hash['logger.level'])
+
 bcast_file_transfer = BcastFileTransfer::BcastFileTransfer.new
 # Initialization
 logger = BcastFileTransfer::Logging.logger_for(self.class.name)

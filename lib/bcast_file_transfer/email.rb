@@ -1,4 +1,5 @@
 module BcastFileTransfer
+  # Handles email sending of script results
   class Email
     require 'mail'
 

@@ -1,4 +1,5 @@
 module BcastFileTransfer
+  # Provides globally-accessible logging that allows configuration
   module Logging
     def logger
       @logger ||= Logging.logger_for(self.class.name)
@@ -8,9 +9,9 @@ module BcastFileTransfer
     @loggers = {}
 
     class << self
-      def initialize(config_hash)
-        @@logfile = config_hash['logger.logfile']
-        @@loglevel = config_hash['logger.level']
+      def initialize(logfile, loglevel)
+        @logfile = logfile
+        @loglevel = loglevel
       end
 
       def logger_for(classname)
@@ -18,15 +19,16 @@ module BcastFileTransfer
       end
 
       def configure_logger_for(classname)
-        logger = if @@logfile.nil? || 'stdout'.casecmp(@@logfile.strip).zero?
+        logger = if @logfile.nil? || 'stdout'.casecmp(@logfile.strip).zero?
                    Logger.new(STDOUT)
                  else
-                   Logger.new(@@logfile)
+                   Logger.new(@logfile)
                  end
 
         # Note: In Ruby 2.3 and later can use
-        # logger.level = onfig_hash['logger.level']
-        logger.level = Kernel.const_get @@loglevel
+        #   logger.level = @loglevel
+        # as it will allow a String
+        logger.level = Kernel.const_get @loglevel
         logger.progname = classname
         logger
       end
