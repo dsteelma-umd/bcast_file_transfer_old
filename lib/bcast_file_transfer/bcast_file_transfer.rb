@@ -70,6 +70,7 @@ module BcastFileTransfer
     def prune_empty_subdirectories(dir)
       prune_results = []
       Dir[dir + '**/'].reverse_each do |d|
+        next if d == dir # Skip directory itself
         if Dir.entries(d).sort == %w(. ..)
           logger.debug "Pruning empty subdirectory: #{d}"
           Dir.rmdir d
