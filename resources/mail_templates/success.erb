@@ -1,22 +1,40 @@
 <% (success_servers, failed_servers) = script_result.server_results.partition(&:success?) %>
 
+File Transfer OK
+
+Summary
+-------
+
+<% success_servers.each do |ss| %>
+  <%= ss.dest_server %>: <% ss.transfer_results.select(&:success?).count %> files transferred.
+
+<% end %>
+
+Details
+-------
 <% success_servers.each do |ss| %>
   dest_server: <%= ss.dest_server %>
+
   dest_directory: <%= ss.dest_directory %>
+
   <% successful_transfer_count = ss.transfer_results.select(&:success?).count %>
   <% total_transfer_count = ss.transfer_results.count %>
 
-  <%= successful_transfer_count %> of <%= total_transfer_count %> files transferred successfully.
+  <% if total_transfer_count == 0 %>
+    No files found for transfer.
+  <% else %>
+    <%= successful_transfer_count %> of <%= total_transfer_count %> files transferred successfully.
 
-  Files Transferred
-  <% ss.transfer_results.each do |t| %>
-      <%= t.file %>
+    Files Transferred
+    <% ss.transfer_results.each do |t| %>
+        <%= t.file %>
 
+    <% end %>
   <% end %>
 <% end %>
 
 <% if script_result.move_results.any? %>
-  <%= script_result.move_results.count %> file(s) were moved:
+  <%= script_result.move_results.count %> file(s) were moved on the source server:
   <% script_result.move_results.each do |m| %>
     <%= m.old_location %> to <%= m.new_location %>
 
@@ -24,7 +42,7 @@
 <% end %>
 
 <% if script_result.prune_results.any? %>
-  <%= script_result.prune_results.count %> empty directories were pruned:
+  <%= script_result.prune_results.count %> empty directories on the source server were pruned:
   <% script_result.prune_results.each do |p| %>
     <%= p.dir_name %>
 

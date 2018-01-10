@@ -29,23 +29,18 @@ module BcastFileTransfer
       end
 
       mail.deliver!
-#      puts mail.to_s
     end
 
     def self.generate_subject(config_hash, script_result)
+      mail_config = config_hash['mail']
       if script_result.success?
-        'File transfer successful'
+        "#{mail_config['job_name']} File transfer OK"
       else
-        'File transfer failed'
+        "#{mail_config['job_name']} File transfer FAILED"
       end
     end
 
     def self.generate_email_body(config_hash, script_result)
-      #  comparison_results = script_result.comparison_results
-      #  transfer_results = script_result.transfer_results
-
-      #  (successful_transfers, failed_transfers) = transfer_results.partition(&:success?)
-
       email = ''
 
       if script_result.success?

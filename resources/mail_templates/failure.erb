@@ -1,11 +1,12 @@
 <% (success_servers, failed_servers) = script_result.server_results.partition(&:success?) %>
 
-Failures occurred!
+File Transfer FAILED!
 
 Failures
 --------
 <% failed_servers.each do |fs| %>
   dest_server: <%= fs.dest_server %>
+
   dest_directory: <%= fs.dest_directory %>
 
   <% unless fs.comparison_result.success? %>
@@ -40,6 +41,7 @@ Failures
   ---------
   <% success_servers.each do |ss| %>
     dest_server: <%= ss.dest_server %>
+
     dest_directory: <%= ss.dest_directory %>
 
     <% successful_transfers = ss.transfer_results.select(&:success?) %>
