@@ -4,8 +4,6 @@ require 'bcast_file_transfer'
 
 options = BcastFileTransfer::OptParse.parse(ARGV)
 
-puts "options['config_file'] = #{options['config_file']}"
-
 config_file = options['config_file']
 
 unless File.exists?('config.yml') ||
