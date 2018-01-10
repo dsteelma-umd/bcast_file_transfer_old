@@ -6,7 +6,7 @@ Summary
 -------
 
 <% success_servers.each do |ss| %>
-  <%= ss.dest_server %>: <% ss.transfer_results.select(&:success?).count %> files transferred.
+  <%= ss.dest_server %>: <%= ss.transfer_results.select(&:success?).count %> files transferred.
 
 <% end %>
 
